@@ -51,7 +51,7 @@ class App extends Component {
             <span>{item.points}</span>
             <span>
               <button
-                onClick={() => this.onDismiss(item.objectID)}
+                onClick={() => this.onDismiss(item.objectID)} // <-- Higher-order functions
                 type="button"
               >
                 Dismiss
@@ -64,33 +64,4 @@ class App extends Component {
   }
 }
 
-class ExplainBindingsComponent extends Component {
-  constructor() {
-    super();
-
-    this.onClickMe = this.onClickMe.bind(this);
-  }
-
-  onClickMe() {
-    console.log(this);
-  }
-
-  // OR
-
-  // onClickMe = () => {
-  //   console.log(this);
-  // }
-
-  render() {
-    return (
-      <button
-        onClick={this.onClickMe}
-        type="button"
-      >
-        Click Me
-      </button>
-    );
-  }
-}
-
-export default ExplainBindingsComponent;
+export default App;
