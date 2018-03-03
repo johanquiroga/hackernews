@@ -24,6 +24,7 @@ class App extends Component {
       error: null,
     };
 
+    this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
     this.setSearchTopStories = this.setSearchTopStories.bind(this);
     this.fetchSearchTopStories = this.fetchSearchTopStories.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
@@ -69,6 +70,10 @@ class App extends Component {
       .catch((error) => this._isMounted && this.setState({ error }));
   }
 
+  needsToSearchTopStories(searchTerm) {
+    return !this.state.results[searchTerm];
+  }
+
   onSearchChange(event) {
     this.setState({ searchTerm: event.target.value });
   }
@@ -77,16 +82,23 @@ class App extends Component {
     event.preventDefault();
     const { searchTerm } = this.state;
     this.setState({ searchKey: searchTerm });
-    this.fetchSearchTopStories(searchTerm);
+
+    if (this.needsToSearchTopStories(searchTerm)) {
+      this.fetchSearchTopStories(searchTerm);
+    }
   }
 
   onDismiss(id) {
-    const updatedHits = {
-      hits: this.state.result.hits.filter((item) => item.objectID !== id),
-    };
+    const { searchKey, results } = this.state;
+    const { hits, page } = results[searchKey];
+
+    const updatedHits = hits.filter((item) => item.objectID !== id);
 
     this.setState({
-      result: { ...this.state.result, ...updatedHits }
+      results: {
+        ...results,
+        [searchKey]: { hits: updatedHits, page }
+      }
     });
   }
 
