@@ -41,8 +41,8 @@ exports[`App has a valid snapshot 1`] = `
 
 exports[`Button has a valid snapshot 1`] = `
 <button
-  className=""
-  onClick={undefined}
+  className="button"
+  onClick={[Function]}
   type="button"
 >
   Give me More
@@ -51,12 +51,12 @@ exports[`Button has a valid snapshot 1`] = `
 
 exports[`Search has a valid snapshot 1`] = `
 <form
-  onSubmit={undefined}
+  onSubmit={[Function]}
 >
   <input
-    onChange={undefined}
+    onChange={[Function]}
     type="text"
-    value={undefined}
+    value="redux"
   />
   <button
     type="submit"

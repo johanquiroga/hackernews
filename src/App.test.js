@@ -24,14 +24,20 @@ describe('App', () => {
 });
 
 describe('Search', () => {
+  const props = {
+    value: 'redux',
+    onChange(event) {console.log('Change', event)},
+    onSubmit(event) {console.log('Submit', event)}
+  };
+
   it('renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Search>Search</Search>, div);
+    ReactDOM.render(<Search { ...props }>Search</Search>, div);
     ReactDOM.unmountComponentAtNode(div);
   });
 
   test('has a valid snapshot', () => {
-    const component = renderer.create(<Search>Search</Search>);
+    const component = renderer.create(<Search { ...props }>Search</Search>);
     let tree = component.toJSON();
     expect(tree).toMatchSnapshot();
   });
@@ -39,12 +45,13 @@ describe('Search', () => {
 
 describe('Button', () => {
   const props = {
-    className: 'button'
+    className: 'button',
+    onClick() {console.log('Button clicked')}
   };
 
   it('renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Button>Give me More</Button>, div);
+    ReactDOM.render(<Button { ...props }>Give me More</Button>, div);
     ReactDOM.unmountComponentAtNode(div);
   });
 
@@ -54,12 +61,12 @@ describe('Button', () => {
   });
 
   it('sets the correct child', () => {
-    const element = render(<Button>Give me More</Button>);
+    const element = render(<Button { ...props }>Give me More</Button>);
     expect(element.text()).toEqual('Give me More');
   });
 
   test('has a valid snapshot', () => {
-    const component = renderer.create(<Button>Give me More</Button>);
+    const component = renderer.create(<Button { ...props }>Give me More</Button>);
     let tree = component.toJSON();
     expect(tree).toMatchSnapshot();
   });
@@ -70,7 +77,8 @@ describe('Table', () => {
     list: [
       { title: '1', author: '1', num_comments: 1, points: 2, objectID: 'y' },
       { title: '2', author: '2', num_comments: 2, points: 1, objectID: 'z' },
-    ]
+    ],
+    onDismiss(id) {console.log('Item with objectID ' + id + ' dismissed!')}
   };
 
   it('renders without crashing', () => {
