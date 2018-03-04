@@ -128,22 +128,18 @@ class App extends Component {
             Search
           </Search>
         </div>
-        { error
-          ? <div className="interactions">
-            <p>Something went wrong.</p>
-          </div>
-          : <Table
-            list={list}
-            onDismiss={this.onDismiss}
-            />
-        }
+        <TableWithError
+          error={error}
+          list={list}
+          onDismiss={this.onDismiss}
+        />
         <div className="interactions">
-          { isLoading
-            ? <Loading />
-            : <Button onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
-              More
-            </Button>
-          }
+          <ButtonWithLoading
+            isLoading={isLoading}
+            onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}
+          >
+            More
+          </ButtonWithLoading>
         </div>
       </div>
     );
@@ -243,7 +239,26 @@ Button.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
+const Alert = ({msg}) =>
+  <div className="interactions">
+    <p>{msg}</p>
+  </div>
+
 const Loading = () => <FontAwesomeIcon icon="spinner" spin />
+
+const withLoading = (Component) => ({isLoading, ...rest}) =>
+  isLoading
+  ? <Loading />
+  : <Component { ...rest } />
+
+const withError = (Component) => ({error, ...rest}) =>
+  error
+  ? <Alert msg="Something went wrong!." />
+  : <Component { ...rest } />
+
+const ButtonWithLoading = withLoading(Button);
+
+const TableWithError = withError(Table);
 
 export default App;
 
