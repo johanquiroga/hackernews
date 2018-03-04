@@ -1,9 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import renderer from 'react-test-renderer';
-import Enzyme, { shallow, render } from 'enzyme';
+import Enzyme, { shallow, render, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import App, { Search, Button, Table } from './App';
+import App, {
+  Search,
+  Button,
+  ButtonWithLoading,
+  Loading,
+  Table,
+  TableWithError,
+  Alert
+} from './App';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -67,6 +75,90 @@ describe('Button', () => {
 
   test('has a valid snapshot', () => {
     const component = renderer.create(<Button { ...props }>Give me More</Button>);
+    let tree = component.toJSON();
+    expect(tree).toMatchSnapshot();
+  });
+});
+
+describe('ButtonWithLoading', () => {
+  const props = {
+    onClick() {console.log('Button clicked')}
+  };
+
+  it('renders button without crashing', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(<ButtonWithLoading isLoading={false} {...props}>More</ButtonWithLoading>, div);
+    ReactDOM.unmountComponentAtNode(div);
+  });
+
+  it('renders Loading without crashing', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(<ButtonWithLoading isLoading={true} {...props}>More</ButtonWithLoading>, div);
+    ReactDOM.unmountComponentAtNode(div);
+  });
+
+  it('mounts a Button Component', () => {
+    const component = mount(<ButtonWithLoading isLoading={false} {...props}>More</ButtonWithLoading>);
+    expect(component.find(Button).length).toBe(1);
+  });
+
+  it('mounts a Loading Component', () => {
+    const component = mount(<ButtonWithLoading isLoading={true} {...props}>More</ButtonWithLoading>);
+    expect(component.find(Loading).length).toBe(1);
+  });
+
+  test('has a valid button snapshot', () => {
+    const component = renderer.create(<ButtonWithLoading isLoading={false} {...props}>More</ButtonWithLoading>);
+    let tree = component.toJSON();
+    expect(tree).toMatchSnapshot();
+  });
+
+  test('has a valid loading snapshot', () => {
+    const component = renderer.create(<ButtonWithLoading isLoading={true} {...props}>More</ButtonWithLoading>);
+    let tree = component.toJSON();
+    expect(tree).toMatchSnapshot();
+  });
+});
+
+describe('TableWithError', () => {
+  const props = {
+    list: [
+      { title: '1', author: '1', num_comments: 1, points: 2, objectID: 'y' },
+      { title: '2', author: '2', num_comments: 2, points: 1, objectID: 'z' },
+    ],
+    onDismiss(id) {console.log('Item with objectID ' + id + ' dismissed!')}
+  };
+
+  it('renders Table without crashing', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(<TableWithError error={false} {...props} />, div);
+    ReactDOM.unmountComponentAtNode(div);
+  });
+
+  it('renders Error without crashing', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(<TableWithError error={true} {...props} />, div);
+    ReactDOM.unmountComponentAtNode(div);
+  });
+
+  it('mounts a Table Component', () => {
+    const component = mount(<TableWithError error={false} {...props} />);
+    expect(component.find(Table).length).toBe(1);
+  });
+
+  it('mounts an Error Component', () => {
+    const component = mount(<TableWithError error={true} {...props} />);
+    expect(component.find(Alert).length).toBe(1);
+  });
+
+  test('has a valid Error snapshot', () => {
+    const component = renderer.create(<TableWithError error={true} {...props} />);
+    let tree = component.toJSON();
+    expect(tree).toMatchSnapshot();
+  });
+
+  test('has a valid Table snapshot', () => {
+    const component = renderer.create(<TableWithError error={false} {...props} />);
     let tree = component.toJSON();
     expect(tree).toMatchSnapshot();
   });

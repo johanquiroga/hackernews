@@ -265,5 +265,9 @@ export default App;
 export {
   Button,
   Search,
-  Table
+  Table,
+  ButtonWithLoading,
+  TableWithError,
+  Loading,
+  Alert
 };
