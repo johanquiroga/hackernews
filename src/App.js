@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import fontawesome from '@fortawesome/fontawesome';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/fontawesome-free-solid';
 import './App.css';
 
+fontawesome.library.add(faSpinner);
+
 const DEFAULT_QUERY = 'redux';
-const DEFAULT_HPP = '100';
+const DEFAULT_HPP = '20';
 
 const PATH_BASE = 'https://hn.algolia.com/api/v1';
 const PATH_SEARCH = '/search';
@@ -23,6 +28,7 @@ class App extends Component {
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
       error: null,
+      isLoading: false,
     };
 
     this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
@@ -58,17 +64,20 @@ class App extends Component {
     ];
 
     this.setState({
+      error: null,
       results: {
         ...results,
-        [searchKey]: { hits: updatedHits, page }
-      }
+        [searchKey]: { hits: updatedHits, page },
+      },
+      isLoading: false
     });
   }
 
   fetchSearchTopStories(searchTerm, page = 0) {
+    this.setState({ isLoading: true });
     axios(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
       .then((result) => this._isMounted && this.setSearchTopStories(result.data))
-      .catch((error) => this._isMounted && this.setState({ error }));
+      .catch((error) => this._isMounted && this.setState({ error, isLoading: false }));
   }
 
   needsToSearchTopStories(searchTerm) {
@@ -104,7 +113,7 @@ class App extends Component {
   }
 
   render() {
-    const { searchTerm, results, searchKey, error } = this.state;
+    const { searchTerm, results, searchKey, error, isLoading } = this.state;
     const page = (results && results[searchKey] && results[searchKey].page) || 0;
     const list = (results && results[searchKey] && results[searchKey].hits) || [];
 
@@ -129,9 +138,12 @@ class App extends Component {
             />
         }
         <div className="interactions">
-          <Button onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
-            More
-          </Button>
+          { isLoading
+            ? <Loading />
+            : <Button onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
+              More
+            </Button>
+          }
         </div>
       </div>
     );
@@ -230,6 +242,8 @@ Button.propTypes = {
   className: PropTypes.string,
   children: PropTypes.node.isRequired,
 };
+
+const Loading = () => <FontAwesomeIcon icon="spinner" spin />
 
 export default App;
 
