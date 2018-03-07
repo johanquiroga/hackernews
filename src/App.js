@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import { sortBy } from 'lodash';
+import classNames from 'classnames';
 import fontawesome from '@fortawesome/fontawesome';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/fontawesome-free-solid';
@@ -53,6 +54,7 @@ class App extends Component {
 
   componentDidMount() {
     this._isMounted = true;
+
     const { searchTerm } = this.state;
     this.setState({ searchKey: searchTerm });
     this.fetchSearchTopStories(searchTerm);
@@ -87,6 +89,7 @@ class App extends Component {
 
   fetchSearchTopStories(searchTerm, page = 0) {
     this.setState({ isLoading: true });
+
     axios(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
       .then((result) => this._isMounted && this.setSearchTopStories(result.data))
       .catch((error) => this._isMounted && this.setState({ error, isLoading: false }));
@@ -126,12 +129,21 @@ class App extends Component {
 
   onSort(sortKey) {
     // FIXME: reverse sorting is not working
-    const isSortReverse = this.state.sortkey === sortKey && !this.state.isSortReverse;
+    const isSortReverse = this.state.sortKey === sortKey && !this.state.isSortReverse;
     this.setState({ sortKey, isSortReverse });
   }
 
   render() {
-    const { searchTerm, results, searchKey, error, isLoading, sortKey, isSortReverse } = this.state;
+    const {
+      searchTerm,
+      results,
+      searchKey,
+      error,
+      isLoading,
+      sortKey,
+      isSortReverse
+    } = this.state;
+    
     const page = (results && results[searchKey] && results[searchKey].page) || 0;
     const list = (results && results[searchKey] && results[searchKey].hits) || [];
 
@@ -275,14 +287,16 @@ Table.propTypes = {
 };
 
 const Sort = ({sortKey, activeSortKey, onSort, children}) => {
-  const sortClass = ['button-inline'];
-
-  if (sortKey === activeSortKey) {
-    sortClass.push('button-active');
-  }
+  const sortClass = classNames(
+    'button-inline',
+    { 'button-active': sortKey === activeSortKey }
+  );
 
   return (
-    <Button onClick={() => onSort(sortKey)} className={sortClass.join(' ')}>
+    <Button
+      onClick={() => onSort(sortKey)}
+      className={sortClass}
+    >
       {children}
     </Button>
   );
