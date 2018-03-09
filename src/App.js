@@ -5,10 +5,10 @@ import { sortBy } from 'lodash';
 import classNames from 'classnames';
 import fontawesome from '@fortawesome/fontawesome';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/fontawesome-free-solid';
+import { faSpinner, faSort, faSortUp, faSortDown } from '@fortawesome/fontawesome-free-solid';
 import './App.css';
 
-fontawesome.library.add(faSpinner);
+fontawesome.library.add(faSpinner, faSort, faSortUp, faSortDown);
 
 const DEFAULT_QUERY = 'redux';
 const DEFAULT_HPP = '20';
@@ -21,8 +21,8 @@ const PARAM_HPP = 'hitsPerPage=';
 
 const SORTS = {
   NONE: list => list,
-  TITLE: list => sortBy(list, 'title'),
-  AUTHOR: list => sortBy(list, 'author'),
+  TITLE: list => sortBy(list, (item) => item.title.toLowerCase()),
+  AUTHOR: list => sortBy(list, (item) => item.author.toLowerCase()),
   COMMENTS: list => sortBy(list, 'num_comments').reverse(),
   POINTS: list => sortBy(list, 'points').reverse()
 };
@@ -128,7 +128,6 @@ class App extends Component {
   }
 
   onSort(sortKey) {
-    // FIXME: reverse sorting is not working
     const isSortReverse = this.state.sortKey === sortKey && !this.state.isSortReverse;
     this.setState({ sortKey, isSortReverse });
   }
@@ -143,7 +142,7 @@ class App extends Component {
       sortKey,
       isSortReverse
     } = this.state;
-    
+
     const page = (results && results[searchKey] && results[searchKey].page) || 0;
     const list = (results && results[searchKey] && results[searchKey].hits) || [];
 
@@ -222,22 +221,42 @@ const Table = ({ list, sortKey, isSortReverse, onSort, onDismiss }) => {
     <div className="table">
       <div className="table-header">
         <span style={{width: '40%' }}>
-          <Sort sortKey={'TITLE'} onSort={onSort} activeSortKey={sortKey}>
+          <Sort
+            sortKey={'TITLE'}
+            isSortReverse={isSortReverse}
+            onSort={onSort}
+            activeSortKey={sortKey}
+          >
             Title
           </Sort>
         </span>
         <span style={{width: '30%' }}>
-          <Sort sortKey={'AUTHOR'} onSort={onSort} activeSortKey={sortKey}>
+          <Sort
+            sortKey={'AUTHOR'}
+            isSortReverse={isSortReverse}
+            onSort={onSort}
+            activeSortKey={sortKey}
+          >
             Author
           </Sort>
         </span>
         <span style={{width: '10%' }}>
-          <Sort sortKey={'COMMENTS'} onSort={onSort} activeSortKey={sortKey}>
+          <Sort
+            sortKey={'COMMENTS'}
+            isSortReverse={isSortReverse}
+            onSort={onSort}
+            activeSortKey={sortKey}
+          >
             Comments
           </Sort>
         </span>
         <span style={{width: '10%' }}>
-          <Sort sortKey={'POINTS'} onSort={onSort} activeSortKey={sortKey}>
+          <Sort
+            sortKey={'POINTS'}
+            isSortReverse={isSortReverse}
+            onSort={onSort}
+            activeSortKey={sortKey}
+          >
             Points
           </Sort>
         </span>
@@ -286,18 +305,24 @@ Table.propTypes = {
   onDismiss: PropTypes.func.isRequired,
 };
 
-const Sort = ({sortKey, activeSortKey, onSort, children}) => {
+const Sort = ({sortKey, isSortReverse, activeSortKey, onSort, children}) => {
   const sortClass = classNames(
     'button-inline',
     { 'button-active': sortKey === activeSortKey }
   );
+
+  const sortIcon = sortKey === activeSortKey
+    ? isSortReverse
+      ? 'sort-up'
+      : 'sort-down'
+    : 'sort';
 
   return (
     <Button
       onClick={() => onSort(sortKey)}
       className={sortClass}
     >
-      {children}
+      {children} <FontAwesomeIcon icon={sortIcon} size="xs" />
     </Button>
   );
 }
