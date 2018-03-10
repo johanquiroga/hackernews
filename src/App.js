@@ -401,5 +401,7 @@ export {
   ButtonWithLoading,
   TableWithError,
   Loading,
-  Alert
+  Alert,
+  updateSearchTopStoriesState,
+  updateDismissState
 };

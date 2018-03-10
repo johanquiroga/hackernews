@@ -10,7 +10,9 @@ import App, {
   Loading,
   Table,
   TableWithError,
-  Alert
+  Alert,
+  updateSearchTopStoriesState,
+  updateDismissState
 } from './App';
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -194,5 +196,61 @@ describe('Table', () => {
     const component = renderer.create(<Table { ...props } />);
     let tree = component.toJSON();
     expect(tree).toMatchSnapshot();
+  });
+});
+
+describe('updateSearchTopStoriesState', () => {
+  const prevState = {
+    searchKey: 'test',
+    results: {
+      test: {
+        hits: [
+          { title: '1', author: '1', num_comments: 1, points: 2, objectID: 'y' },
+          { title: '2', author: '2', num_comments: 2, points: 1, objectID: 'z' },
+        ],
+        page: 1
+      }
+    }
+  };
+
+  it('updates state with new results from search action', () => {
+    const newHits = {
+      hits: [
+        { title: '3', author: '3', num_comments: 1, points: 2, objectID: 'x' }
+      ],
+      page: 2
+    };
+
+    const newState = updateSearchTopStoriesState(newHits.hits, newHits.page)(prevState);
+
+    expect(newState.results['test'].hits).toEqual([...prevState.results['test'].hits, ...newHits.hits]);
+    expect(newState.results['test'].page).toEqual(newHits.page);
+  });
+});
+
+describe('updateDismissState', () => {
+  const prevState = {
+    searchKey: 'test',
+    results: {
+      test: {
+        hits: [
+          { title: '1', author: '1', num_comments: 1, points: 2, objectID: 'y' },
+          { title: '2', author: '2', num_comments: 2, points: 1, objectID: 'z' },
+        ],
+        page: 1
+      }
+    }
+  };
+
+  it('updates state discarding dismissed item', () => {
+    const dismissedObjectID = 'y';
+
+    const newState = updateDismissState(dismissedObjectID)(prevState);
+
+    expect(
+      newState.results['test'].hits.filter(
+        (item) => item.objectID === dismissedObjectID
+      ).length
+    ).toBe(0);
   });
 });
