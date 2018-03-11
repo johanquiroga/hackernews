@@ -64,9 +64,6 @@ describe('Table', () => {
       { title: '1', author: '1', num_comments: 1, points: 2, objectID: 'y' },
       { title: '2', author: '2', num_comments: 2, points: 1, objectID: 'z' },
     ],
-    sortKey: 'NONE',
-    isSortReverse: false,
-    onSort() {console.log(sorting)},
     onDismiss(id) {console.log('Item with objectID ' + id + ' dismissed!')}
   };
 
