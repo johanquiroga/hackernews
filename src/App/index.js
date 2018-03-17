@@ -9,7 +9,7 @@ import './index.css';
 import Table from '../Table';
 import Search from '../Search';
 
-import { withError, withLoading, withPaginated } from '../HOC';
+import { withPaginated, withLoading, withInfiniteScroll } from '../HOC';
 import {
   DEFAULT_QUERY,
   DEFAULT_HPP,
@@ -150,7 +150,7 @@ class App extends Component {
           </Search>
         </div>
 
-        <TableWithErrorWithLoadingWithPaginated
+        <AdvancedTable
           error={error}
           list={list}
           isLoading={isLoading}
@@ -163,10 +163,10 @@ class App extends Component {
   }
 }
 
-const TableWithErrorWithLoadingWithPaginated = compose(
+const AdvancedTable = compose(
   withPaginated,
-  withLoading,
-  withError
+  withInfiniteScroll,
+  withLoading
 )(Table);
 
 export default App;
