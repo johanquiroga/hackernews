@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { compose } from 'recompose';
 import fontawesome from '@fortawesome/fontawesome';
 import { faSpinner, faSort, faSortUp, faSortDown } from '@fortawesome/fontawesome-free-solid';
 
 import './index.css';
 
-import { ButtonWithLoading } from '../Button';
-import { TableWithError } from '../Table';
+import Table from '../Table';
 import Search from '../Search';
 
+import { withError, withLoading, withPaginated } from '../HOC';
 import {
   DEFAULT_QUERY,
   DEFAULT_HPP,
@@ -18,6 +19,9 @@ import {
   PARAM_PAGE,
   PARAM_HPP
 } from '../constants';
+
+const getHackerNewsUrl = (value, page) =>
+  `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${value}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`;
 
 fontawesome.library.add(faSpinner, faSort, faSortUp, faSortDown);
 
@@ -70,13 +74,6 @@ class App extends Component {
       error: null,
       isLoading: false,
     };
-
-    this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
-    this.setSearchTopStories = this.setSearchTopStories.bind(this);
-    this.fetchSearchTopStories = this.fetchSearchTopStories.bind(this);
-    this.onSearchChange = this.onSearchChange.bind(this);
-    this.onSearchSubmit = this.onSearchSubmit.bind(this);
-    this.onDismiss = this.onDismiss.bind(this);
   }
 
   componentDidMount() {
@@ -91,38 +88,41 @@ class App extends Component {
     this._isMounted = false;
   }
 
-  setSearchTopStories(result) {
+  setSearchTopStories = (result) => {
     const { hits, page } = result;
     this.setState(updateSearchTopStoriesState(hits, page));
   }
 
-  fetchSearchTopStories(searchTerm, page = 0) {
+  fetchSearchTopStories = (searchTerm, page = 0) => {
     this.setState({ isLoading: true });
 
-    axios(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
+    axios(getHackerNewsUrl(searchTerm, page))
       .then((result) => this._isMounted && this.setSearchTopStories(result.data))
       .catch((error) => this._isMounted && this.setState({ error, isLoading: false }));
   }
 
-  needsToSearchTopStories(searchTerm) {
+  needsToSearchTopStories = (searchTerm) => {
     return !this.state.results[searchTerm];
   }
 
-  onSearchChange(event) {
+  onSearchChange = (event) => {
     this.setState({ searchTerm: event.target.value });
   }
 
-  onSearchSubmit(event) {
+  onSearchSubmit = (event) => {
     event.preventDefault();
 
-    const { searchTerm } = this.state;
-    this.setState({ searchKey: searchTerm });
-    if (this.needsToSearchTopStories(searchTerm)) {
-      this.fetchSearchTopStories(searchTerm);
+    const searchTerm = this.state.searchTerm.trim();
+
+    if (searchTerm !== '') {
+      this.setState({ searchKey: searchTerm });
+      if (this.needsToSearchTopStories(searchTerm)) {
+        this.fetchSearchTopStories(searchTerm);
+      }
     }
   }
 
-  onDismiss(id) {
+  onDismiss = (id) => {
     this.setState(updateDismissState(id));
   }
 
@@ -149,23 +149,25 @@ class App extends Component {
             Search
           </Search>
         </div>
-        <TableWithError
+
+        <TableWithErrorWithLoadingWithPaginated
           error={error}
           list={list}
+          isLoading={isLoading}
+          page={page}
           onDismiss={this.onDismiss}
+          onPaginatedSearch={() => this.fetchSearchTopStories(searchKey, page + 1)}
         />
-        <div className="interactions">
-          <ButtonWithLoading
-            isLoading={isLoading}
-            onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}
-          >
-            More
-          </ButtonWithLoading>
-        </div>
       </div>
     );
   }
 }
+
+const TableWithErrorWithLoadingWithPaginated = compose(
+  withPaginated,
+  withLoading,
+  withError
+)(Table);
 
 export default App;
 
