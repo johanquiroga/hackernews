@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Sort from '../Sort';
 import Button from '../Button';
-import { withError } from '../HOC';
 import { SORTS } from '../constants';
 
 class Table extends Component {
@@ -13,11 +12,9 @@ class Table extends Component {
       sortKey: 'NONE',
       isSortReverse: false,
     };
-
-    this.onSort = this.onSort.bind(this);
   }
 
-  onSort(sortKey) {
+  onSort = (sortKey) => {
     this.setState((prevState) => {
       const isSortReverse = prevState.sortKey === sortKey && !prevState.isSortReverse;
 
@@ -122,7 +119,5 @@ Table.propTypes = {
   ).isRequired,
   onDismiss: PropTypes.func.isRequired,
 };
-
-export const TableWithError = withError(Table);
 
 export default Table;

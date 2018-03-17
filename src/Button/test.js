@@ -3,9 +3,11 @@ import ReactDOM from 'react-dom';
 import renderer from 'react-test-renderer';
 import Enzyme, { shallow, render, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
+import { compose } from 'recompose';
 
-import Button, { ButtonWithLoading } from './index.js';
+import Button from './index.js';
 import Loading from '../Loading';
+import { withLoading } from '../HOC';
 
 import fontawesome from '@fortawesome/fontawesome';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
@@ -46,6 +48,10 @@ describe('ButtonWithLoading', () => {
   const props = {
     onClick() {console.log('Button clicked')}
   };
+
+  const ButtonWithLoading = compose(
+    withLoading
+  )(Button);
 
   it('renders button without crashing', () => {
     const div = document.createElement('div');

@@ -3,8 +3,12 @@ import ReactDOM from 'react-dom';
 import renderer from 'react-test-renderer';
 import Enzyme, { shallow, render, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
+import { compose } from 'recompose';
+
 import Alert from '../Alert';
-import Table, { TableWithError } from './index.js';
+import Table from './index.js';
+import { withError } from '../HOC';
+
 import fontawesome from '@fortawesome/fontawesome';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faSpinner, faSort, faSortUp, faSortDown } from '@fortawesome/fontawesome-free-solid';
@@ -22,6 +26,10 @@ describe('TableWithError', () => {
     onSort() {console.log(sorting)},
     onDismiss(id) {console.log('Item with objectID ' + id + ' dismissed!')}
   };
+
+  const TableWithError = compose(
+    withError
+  )(Table);
 
   it('renders Table without crashing', () => {
     const div = document.createElement('div');

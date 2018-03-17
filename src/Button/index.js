@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withLoading } from '../HOC';
 
 const Button = ({ onClick, className, children }) =>
   <button
@@ -22,5 +21,3 @@ Button.propTypes = {
 };
 
 export default Button;
-
-export const ButtonWithLoading = withLoading(Button);
