@@ -16,3 +16,21 @@ export const SORTS = {
   COMMENTS: list => sortBy(list, 'num_comments').reverse(),
   POINTS: list => sortBy(list, 'points').reverse()
 };
+
+export const getHackerNewsUrl = (value, page) =>
+  `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${value}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`;
+
+export const loadingCondition = (props) =>
+  props.isLoading;
+
+export const paginatedCondition = (props) =>
+  props.page !== null && !loadingCondition(props) && errorCondition(props);
+
+export const infiniteScrollCondition = (props) =>
+  (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 500)
+  && props.list.length
+  && !loadingCondition(props)
+  && !errorCondition(props);
+
+export const errorCondition = (props) =>
+  props.error;

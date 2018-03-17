@@ -7,6 +7,7 @@ import { compose } from 'recompose';
 
 import Button from './index.js';
 import Loading from '../Loading';
+import { loadingCondition } from '../constants';
 import { withLoading } from '../HOC';
 
 import fontawesome from '@fortawesome/fontawesome';
@@ -50,7 +51,7 @@ describe('ButtonWithLoading', () => {
   };
 
   const ButtonWithLoading = compose(
-    withLoading
+    withLoading(loadingCondition)
   )(Button);
 
   it('renders button without crashing', () => {

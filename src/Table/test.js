@@ -7,6 +7,7 @@ import { compose } from 'recompose';
 
 import Alert from '../Alert';
 import Table from './index.js';
+import { errorCondition } from '../constants';
 import { withError } from '../HOC';
 
 import fontawesome from '@fortawesome/fontawesome';
@@ -28,7 +29,7 @@ describe('TableWithError', () => {
   };
 
   const TableWithError = compose(
-    withError
+    withError(errorCondition)
   )(Table);
 
   it('renders Table without crashing', () => {

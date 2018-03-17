@@ -3,22 +3,22 @@ import Loading from '../Loading';
 import Alert from '../Alert';
 import Button from '../Button';
 
-export const withLoading = (Component) => (props) =>
+export const withLoading = (conditionFn) => (Component) => (props) =>
   <div>
     <Component { ...props } />
 
     <div className="interactions">
-      {props.isLoading && <Loading />}
+      {conditionFn(props) && <Loading />}
     </div>
   </div>
 
-export const withPaginated = (Component) => (props) =>
+export const withPaginated = (conditionFn) => (Component) => (props) =>
   <div>
     <Component {...props} />
 
     <div className="interactions">
       {
-        (props.page !== null && !props.isLoading && props.error) &&
+        conditionFn(props) &&
         <div>
           <Alert msg="Something went wrong!" />
 
@@ -32,7 +32,7 @@ export const withPaginated = (Component) => (props) =>
     </div>
   </div>
 
-export const withInfiniteScroll = (Component) =>
+export const withInfiniteScroll = (conditionFn) => (Component) =>
   class WithInfiniteScroll extends React.Component {
     componentDidMount() {
       window.addEventListener('scroll', this.onScroll, false);
@@ -42,23 +42,15 @@ export const withInfiniteScroll = (Component) =>
       window.removeEventListener('scroll', this.onScroll, false);
     }
 
-    onScroll = () => {
-      if (
-        (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 500) &&
-        this.props.list.length &&
-        !this.props.isLoading &&
-        !this.props.error
-      ) {
-        this.props.onPaginatedSearch();
-      }
-    }
+    onScroll = () =>
+      conditionFn(this.props) && this.props.onPaginatedSearch();
 
     render() {
       return <Component {...this.props} />;
     }
   }
 
-export const withError = (Component) => ({error, ...rest}) =>
+export const withError = (conditionFn) => (Component) => ({error, ...rest}) =>
   error
   ? <Alert msg="Something went wrong!" />
   : <Component { ...rest } />

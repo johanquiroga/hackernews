@@ -12,16 +12,11 @@ import Search from '../Search';
 import { withPaginated, withLoading, withInfiniteScroll } from '../HOC';
 import {
   DEFAULT_QUERY,
-  DEFAULT_HPP,
-  PATH_BASE,
-  PATH_SEARCH,
-  PARAM_SEARCH,
-  PARAM_PAGE,
-  PARAM_HPP
+  getHackerNewsUrl,
+  loadingCondition,
+  paginatedCondition,
+  infiniteScrollCondition
 } from '../constants';
-
-const getHackerNewsUrl = (value, page) =>
-  `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${value}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`;
 
 fontawesome.library.add(faSpinner, faSort, faSortUp, faSortDown);
 
@@ -164,9 +159,9 @@ class App extends Component {
 }
 
 const AdvancedTable = compose(
-  withPaginated,
-  withInfiniteScroll,
-  withLoading
+  withPaginated(paginatedCondition),
+  withInfiniteScroll(infiniteScrollCondition),
+  withLoading(loadingCondition)
 )(Table);
 
 export default App;
