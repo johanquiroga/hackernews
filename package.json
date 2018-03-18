@@ -1,6 +1,6 @@
 {
   "name": "hackernews",
-  "homepage": "http://johanquiroga.me/hackernews",
+  "homepage": "http://hackernews.johanquiroga.me",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
